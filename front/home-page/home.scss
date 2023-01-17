@@ -3,15 +3,8 @@ body{
 
 }
 
-#locally {
+.box {
   display: inline-block;
-  width: 400px;
-  height: 250px;
-  border: 1px solid black;
-}
-
-#online {
-    display: inline-block;
   width: 400px;
   height: 250px;
   border: 1px solid black;
