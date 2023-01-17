@@ -1,3 +1,7 @@
+const player1 = 'X'
+const player2 = 'Y'
+let currentPlayer = player1
+
 const ROWS = 6
 const COLUMNS = 7
 const board = []
@@ -14,7 +18,7 @@ function initGame(){
             let circle = document.createElement("div")
             circle.id = i.toString() + "-" + j.toString()
             circle.classList.add("circle")
-            circle.addEventListener("click", onClickSquare)
+            circle.addEventListener("click", addCircle)
             document.getElementById("board").append(circle)
         }
         board.push(row)
@@ -22,7 +26,24 @@ function initGame(){
     console.log(board)
 }
 
-function onClickSquare(e){
+function addCircle(e){
+    console.log(e.target.id)
+    if(isOver) return
+    let [row, column] = e.target.id.split("-")
+    row = columnTracker[column] // get the actual row from the column tracker
+    if (row < 0) return
+    board[row][column] = currentPlayer
+    let circle = document.getElementById(row.toString() + "-" + column.toString())
+    if(currentPlayer === player1){
+        circle.style.backgroundColor = "red"
+        currentPlayer = player2
+    }
+    else{
+        circle.style.backgroundColor = "yellow"
+        currentPlayer = player1
+    }
+    columnTracker[column]--
+    checkForWin()
 
 }
 

@@ -25,12 +25,20 @@ body{
   .circle {
     height: 80px;
     width: 80px;
-    margin: 5px;
+    margin: 7px;
     background-color: white;
     border-radius: 50%;
     border: 5px solid navy;
   }
 
+}
+
+.red-circle {
+  background-color: red;
+}
+
+.yellow-circle {
+  background-color: yellow;
 }
 
 
