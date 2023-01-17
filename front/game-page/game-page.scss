@@ -13,8 +13,8 @@ body{
     flex-wrap: wrap;
     justify-content: center;
     align-items: center;
-    width: 680px;
-    height: 600px;
+    width: 600px;
+    height: 540px;
     background-color: #166bfa;
     border: 7px solid black;
     border-radius: 4%;
@@ -22,9 +22,13 @@ body{
 
   }
 
+  #top-row {
+
+  }
+
   .circle {
-    height: 80px;
-    width: 80px;
+    height: 60px;
+    width: 60px;
     margin: 7px;
     background-color: white;
     border-radius: 50%;
