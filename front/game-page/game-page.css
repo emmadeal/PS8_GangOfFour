@@ -6,26 +6,47 @@
 
 body {
   text-align: center;
+  /*#board:hover .show-row{
+    opacity: 0.4;
+    width: 60px;
+    background-color: #166bfa;
+    z-index: 5;
+  }
+  */
 }
 body #board {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
   align-items: center;
-  width: 680px;
-  height: 600px;
+  width: 550px;
+  height: 480px;
   background-color: #166bfa;
-  border: 7px solid black;
+  border: 9px solid black;
   border-radius: 4%;
   margin: 0 auto;
 }
+body #top-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  width: 550px;
+  height: 60px;
+  margin: 10px auto;
+}
 body .circle {
-  height: 80px;
-  width: 80px;
-  margin: 7px;
-  background-color: white;
+  height: 60px;
+  width: 60px;
+  margin: 8px;
   border-radius: 50%;
-  border: 5px solid navy;
+  border: 5px solid black;
+}
+body .invisible-circle {
+  height: 60px;
+  width: 60px;
+  margin: 8px;
+  background-color: white;
 }
 
 .red-circle {
@@ -36,6 +57,27 @@ body .circle {
   background-color: yellow;
 }
 
+.white-circle {
+  background-color: white;
+}
+
+.raindrop {
+  position: absolute;
+  width: 10px;
+  height: 20px;
+  border-radius: 50%;
+  background-color: blue;
+  animation: falling 1s ease-in-out infinite;
+}
+
+@keyframes falling {
+  0% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(100%);
+  }
+}
 @keyframes shake {
   0% {
     transform: translate(1px, 1px) rotate(0deg);

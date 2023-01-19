@@ -18,10 +18,10 @@ function initGame(){
             row.push(' ')
             let circle = document.createElement("div")
             circle.id = i.toString() + "-" + j.toString()
-            circle.classList.add("circle")
+            circle.classList.add("circle", "white-circle")
             circle.addEventListener("click", addCircle)
-            circle.addEventListener("onmouseenter", addTopCircle)
-            circle.addEventListener("onmouseleave", rmvTopCircle)
+            circle.addEventListener("mouseenter", addTopCircle)
+            circle.addEventListener("mouseleave", rmvTopCircle)
             document.getElementById("board").append(circle)
         }
         board.push(row)
@@ -33,9 +33,38 @@ function addInvisibleRow(){
     for (let j = 0; j < COLUMNS; j++) {
         let circle = document.createElement("div")
         circle.id = "top-row-0- " + j.toString()
+        circle.classList.add("invisible-circle")
         document.getElementById("top-row").append(circle)
     }
 }
+
+function addTopCircle(e) {
+    if (isOver) return
+    let [, col] = e.target.id.split("-")
+    if (rowTracker[col] < 0) return // if the column is full don't show the top circle
+    let circle = document.getElementById("top-row-0- " + col.toString())
+    circle.classList.replace("invisible-circle", "circle")
+    circle.classList.add(currentPlayer === player1 ? "red-circle" : "yellow-circle")
+
+    //get child of board
+    let boardChild = document.getElementById("board").children
+    let colChilds = Array.from(boardChild).filter(circle => circle.id.split("-")[1] === col)
+    colChilds.forEach(circle => circle.classList.add("show-row"))
+
+
+
+
+}
+
+function rmvTopCircle(e){
+    let [, col] = e.target.id.split("-")
+    let circle = document.getElementById("top-row-0- " + col.toString())
+    circle.classList.replace("circle", "invisible-circle")
+    circle.classList.remove("red-circle")
+    circle.classList.remove("yellow-circle")
+}
+
+
 
 function addCircle(e){
     if(isOver) return
@@ -45,30 +74,20 @@ function addCircle(e){
     board[row][col] = currentPlayer
     let circle = document.getElementById(row.toString() + "-" + col.toString())
     if(currentPlayer === player1){
-        circle.style.backgroundColor = "red"
+        circle.classList.replace("white-circle", "red-circle")
         currentPlayer = player2
     }
     else{
-        circle.style.backgroundColor = "yellow"
+        circle.classList.replace("white-circle", "yellow-circle")
         currentPlayer = player1
     }
+    //show the turn
+    let turn = document.getElementById("turn")
+    turn.innerHTML = currentPlayer + "'s turn"
     rowTracker[col]--
     checkForWin()
-
 }
 
-function addTopCircle(e){
-    console.log(e.target.id.split("-"))
-    let [, col] = e.target.id.split("-")
-    let circle = document.getElementById("top-row-0- " + col.toString())
-    circle.style.backgroundColor = currentPlayer === player1 ? "red" : "yellow";
-}
-
-function rmvTopCircle(e){
-    let [, col] = e.target.id.split(" ")
-    let circle = document.getElementById("top-row-0- " + col.toString())
-    circle.style.backgroundColor = "white";
-}
 
 function checkForWin() {
     if(checkHorizontal()) return
@@ -132,7 +151,30 @@ function checkAntiDiagonal(){
 }
 
 function setWinner(i, j){
-    alert("Winner is " + board[i][j])
+    isOver = true
+    let winner = document.getElementById("winner")
+    winner.innerHTML = board[i][j] + " is the winner!"
+    winner.classList.add("winner")
+    //hide the turn
+    document.getElementById("turn").innerHTML = ""
+
+    //resetGame()
+}
+
+function resetGame(){
+    isOver = false
+    currentPlayer = player1
+    rowTracker.fill(5)
+    board.forEach(row => row.fill(' '))
+    //get all the children of the board and functionally replace the class
+    let circles = document.getElementById("board").children
+    Array.from(circles).forEach(circle => {
+        circle.classList.replace("red-circle", "white-circle")
+        circle.classList.replace("yellow-circle", "white-circle")
+    })
+    document.getElementById("winner").innerHTML = ""
+    document.getElementById("winner").classList.remove("winner")
+    document.getElementById("turn").innerHTML = player1 + "'s turn"
 }
 
 
@@ -154,14 +196,22 @@ function setWinner(i, j){
 
 
 
-const nothingToSeeHere = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a'];
+const nothingToSeeHere = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight'];
 let keysPressed = [];
 
 document.addEventListener('keydown', (e) => {
     keysPressed.push(e.code);
     if (keysPressed.length > nothingToSeeHere.length) keysPressed.shift();
     if (keysPressed.join(',') === nothingToSeeHere.join(',')) {
-        document.getElementById('board').classList.add("shake")
-        setTimeout(() => board.classList.remove("shake"), 1000);
+        for (let i = 0; i < 30; i++) {
+            let drop = document.createElement("div");
+            drop.classList.add("raindrop");
+            //drop.style.left = Math.random() * 100 + "vw";
+            //make inner text a emoji water
+            drop.innerText = "💧";
+            //eppend on main
+            document.getElementById("winner").appendChild(drop);
+        }
+        console.log("You did it!")
     }
 });
