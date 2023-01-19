@@ -4,7 +4,7 @@ let currentPlayer = player1
 
 const ROWS = 6
 const COLUMNS = 7
-const board = []
+const board = new Array(ROWS).fill(null).map(() => new Array(COLUMNS).fill(" ").slice())
 const rowTracker = [5, 5, 5, 5, 5, 5, 5]
 let isOver = false
 
@@ -12,22 +12,25 @@ window.onload = () =>  initGame()
 
 function initGame(){
     addInvisibleRow() // to add a circle on top of the board
-    for (let i = 0; i < ROWS; i++) {
-        let row = []
-        for (let j = 0; j < COLUMNS; j++) {
-            row.push(' ')
+    for (let j = 0; j < COLUMNS; j++) {
+        let rowDiv = document.createElement("div")
+        rowDiv.id = "col-" + j
+        for (let i = 0; i < ROWS; i++) {
             let circle = document.createElement("div")
-            circle.id = i.toString() + "-" + j.toString()
+            circle.id = i + "-" + j
             circle.classList.add("circle", "white-circle")
-            circle.addEventListener("click", addCircle)
-            circle.addEventListener("mouseenter", addTopCircle)
-            circle.addEventListener("mouseleave", rmvTopCircle)
-            document.getElementById("board").append(circle)
+            rowDiv.addEventListener("click", addCircle)
+            rowDiv.addEventListener("mouseenter", addTopCircle)
+            rowDiv.addEventListener("mouseleave", rmvTopCircle)
+            rowDiv.append(circle)
+
         }
-        board.push(row)
+        document.getElementById("board").append(rowDiv)
+
     }
     console.log(board)
 }
+
 
 function addInvisibleRow(){
     for (let j = 0; j < COLUMNS; j++) {
@@ -40,16 +43,19 @@ function addInvisibleRow(){
 
 function addTopCircle(e) {
     if (isOver) return
+    console.log()
     let [, col] = e.target.id.split("-")
     if (rowTracker[col] < 0) return // if the column is full don't show the top circle
     let circle = document.getElementById("top-row-0- " + col.toString())
     circle.classList.replace("invisible-circle", "circle")
     circle.classList.add(currentPlayer === player1 ? "red-circle" : "yellow-circle")
+    document.getElementById(`col-${col}`).classList.add("show-col")
 
-    //get child of board
-    let boardChild = document.getElementById("board").children
-    let colChilds = Array.from(boardChild).filter(circle => circle.id.split("-")[1] === col)
-    colChilds.forEach(circle => circle.classList.add("show-row"))
+
+
+
+
+
 
 
 
@@ -62,6 +68,7 @@ function rmvTopCircle(e){
     circle.classList.replace("circle", "invisible-circle")
     circle.classList.remove("red-circle")
     circle.classList.remove("yellow-circle")
+    document.getElementById(`col-${col}`).classList.remove("show-col")
 }
 
 
@@ -86,6 +93,8 @@ function addCircle(e){
     turn.innerHTML = currentPlayer + "'s turn"
     rowTracker[col]--
     checkForWin()
+
+
 }
 
 
@@ -158,23 +167,39 @@ function setWinner(i, j){
     //hide the turn
     document.getElementById("turn").innerHTML = ""
 
-    //resetGame()
+    //reset the game after 3 seconds
+    setTimeout(resetGame, 2000)
 }
 
 function resetGame(){
+    location.reload()
+        /*
     isOver = false
     currentPlayer = player1
     rowTracker.fill(5)
     board.forEach(row => row.fill(' '))
-    //get all the children of the board and functionally replace the class
-    let circles = document.getElementById("board").children
+
+    let circles = []
+    for (let j = 0; j < COLUMNS; j++) {
+       let col  = document.getElementById(`col-${j}`)
+       circles.push(col.children)
+    }
+    console.log(circles)
+
+
+    /*
+
+
     Array.from(circles).forEach(circle => {
+        console.log(circle)
         circle.classList.replace("red-circle", "white-circle")
         circle.classList.replace("yellow-circle", "white-circle")
     })
     document.getElementById("winner").innerHTML = ""
     document.getElementById("winner").classList.remove("winner")
     document.getElementById("turn").innerHTML = player1 + "'s turn"
+
+     */
 }
 
 
@@ -206,7 +231,7 @@ document.addEventListener('keydown', (e) => {
         for (let i = 0; i < 30; i++) {
             let drop = document.createElement("div");
             drop.classList.add("raindrop");
-            //drop.style.left = Math.random() * 100 + "vw";
+            drop.style.left = Math.random() * 100 + "vw";
             //make inner text a emoji water
             drop.innerText = "💧";
             //eppend on main

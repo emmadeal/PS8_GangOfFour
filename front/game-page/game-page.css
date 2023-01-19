@@ -6,25 +6,23 @@
 
 body {
   text-align: center;
-  /*#board:hover .show-row{
-    opacity: 0.4;
-    width: 60px;
-    background-color: #166bfa;
-    z-index: 5;
-  }
-  */
 }
 body #board {
   display: flex;
+  flex-direction: column;
   flex-wrap: wrap;
   justify-content: center;
   align-items: center;
   width: 550px;
-  height: 480px;
+  height: 440px;
   background-color: #166bfa;
   border: 9px solid black;
   border-radius: 4%;
   margin: 0 auto;
+}
+body #board .show-col {
+  background-color: #166bfa;
+  opacity: 0.66;
 }
 body #top-row {
   display: flex;
@@ -34,6 +32,10 @@ body #top-row {
   width: 550px;
   height: 60px;
   margin: 10px auto;
+}
+body .show-row {
+  opacity: 0.4;
+  background-color: #013ca1;
 }
 body .circle {
   height: 60px;
