@@ -6,6 +6,7 @@
 
 body {
   text-align: center;
+  background-color: #10d8e0;
 }
 body h1, body h2, body h3 {
   font-family: fantasy;
@@ -51,7 +52,6 @@ body .invisible-circle {
   height: 60px;
   width: 60px;
   margin: 8px;
-  background-color: white;
 }
 
 .circle-fall {
@@ -63,7 +63,7 @@ body .invisible-circle {
 }
 
 .yellow-title {
-  color: yellow;
+  color: #eeea02;
 }
 
 .red-circle {
