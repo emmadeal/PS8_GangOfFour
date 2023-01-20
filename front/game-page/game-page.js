@@ -79,17 +79,19 @@ function addCircle(e){
     let row = rowTracker[col] // get the actual row from the column tracker
     if (row < 0) return
     board[row][col] = currentPlayer
+    let turn = document.getElementById("turn")
     let circle = document.getElementById(row.toString() + "-" + col.toString())
     if(currentPlayer === player1){
         circle.classList.replace("white-circle", "red-circle")
+        turn.classList.replace("red-title", "yellow-title")
         currentPlayer = player2
     }
     else{
         circle.classList.replace("white-circle", "yellow-circle")
+        turn.classList.replace("yellow-title", "red-title")
         currentPlayer = player1
     }
     //show the turn
-    let turn = document.getElementById("turn")
     turn.innerHTML = currentPlayer + "'s turn"
     rowTracker[col]--
     checkForWin()
@@ -103,6 +105,10 @@ function checkForWin() {
     if(checkVertical()) return
     if(checkDiagonal()) return
     checkAntiDiagonal()
+}
+
+function endGameModal(){
+
 }
 
 
@@ -163,7 +169,8 @@ function setWinner(i, j){
     isOver = true
     let winner = document.getElementById("winner")
     winner.innerHTML = board[i][j] + " is the winner!"
-    winner.classList.add("winner")
+    winner.classList.add("winner", board[i][j] === player1 ? "red-title" : "yellow-title")
+
     //hide the turn
     document.getElementById("turn").innerHTML = ""
 
