@@ -1,0 +1,58 @@
+.header{
+    height: 100px;
+    border: solid black;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-right: 15px;
+    padding-left: 15px;
+}
+
+
+
+input.retour {
+    height:50px;
+    width: 50px;
+    border: none;
+    background-image: url(../../images/retour.png);
+    background-size: cover;
+}
+
+input.home {
+    height:50px;
+    width: 50px;
+    border: none;
+    background-image: url(../../images/home.png);
+    background-size: cover;
+}
+
+input.score {
+    height:50px;
+    width: 50px;
+    border: none;
+    background-image: url(../../images/score.png);
+    background-size: cover;
+}
+
+input.profile {
+    height:50px;
+    width: 50px;
+    border: none;
+    background-image: url(../../images/profile.png);
+    background-size: cover;
+}
+
+input.settings {
+    height:50px;
+    width: 50px;
+    border: none;
+    background-image: url(../../images/settings.png);
+    background-size: cover;
+}
+
+a {
+    color: black;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 50px;
+}
