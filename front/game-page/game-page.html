@@ -10,11 +10,35 @@
     <nav></nav>
     <main>
         <h1>Connect 4</h1>
-        <h2 id="winner"></h2>
-        <h3 id="turn" class="red-title">X's Turn</h3>
+        <div id="matchup">
+            <div id="p1">
+                <div class="matchup-circle red-circle"></div>
+                <p>X</p>
+            </div>
+            <p>VS</p>
+            <div id="p2">
+                <div class="matchup-circle yellow-circle"></div>
+                <p>Y</p>
+            </div>
+        </div>
+        <!-- <h3 id="turn" class="red-title">X's Turn</h3> -->
+        <p id="countdown"></p>
         <div id="top-row"></div>
         <div id="board"></div>
     </main>
+
+
+    <div id="end-game-modal">
+        <div class="modal-content">
+            <h2 id="winner"></h2>
+            <h3 id="points">+50 points!</h3>
+            <div id="btn-group">
+                <button>Back to the menu</button>
+                <button>Play again</button>
+            </div>
+
+        </div>
+    </div>
     <aside></aside> <!-- chat -->
 
     <footer></footer>
