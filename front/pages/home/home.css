@@ -1,0 +1,19 @@
+body{
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+}
+
+.box {
+    display: inline-block;
+    width: 400px;
+    height: 250px;
+    border: 1px solid black;
+}
+
+.button {
+    width: 170px;
+    height: 150px;
+}

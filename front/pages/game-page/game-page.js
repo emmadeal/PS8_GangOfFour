@@ -1,18 +1,98 @@
-const player1 = 'X'
+/*const player1 = 'X'
 const player2 = 'Y'
 let currentPlayer = player1
 const ROWS = 6
 const COLUMNS = 7
-const board = new Array(ROWS).fill(null).map(() => new Array(COLUMNS).fill(" ").slice())
 const rowTracker = [5, 5, 5, 5, 5, 5, 5]
 let isOver = false
 const winCombination = []
 const WIN_POINTS = 50
 const DRAW_POINTS = 10
 const LOSS_POINTS = -25
+*/
+const player1 = 1
+const player2 = 2
+let currentPlayer = player1
+let isOver = false
+const ROWS = 6
+const COLUMNS = 7
+const board = new Array(ROWS).fill(null).map(() => new Array(COLUMNS).fill(0).slice())
 const FALLING_TIME = 50
+const rowTracker = [5, 5, 5, 5, 5, 5, 5]
+let winCombination = []
+let ScorePoints = 0
+
+
 
 window.onload = () => initGame()
+
+socket.on('connect', () => {
+    console.log("connected")
+
+})
+
+socket.on('endGame', (infos) => {
+    const info = JSON.parse(infos)
+    const winner = info.winner;
+    if(winner === 'player') {
+        winCombination = info.winCombination;
+        ScorePoints = info.points
+        setWinner(player1, true)
+    }
+    else if(winner === 'IA') {
+        winCombination = infos.winCombination;
+        ScorePoints = info.points
+        setWinner(player2, true)
+    }
+    else {
+        ScorePoints = info.points
+        setWinner(null, false)
+    }
+
+
+})
+
+socket.on('updateBoard', async (board) => {
+    const [i, j] = updateBoard(board)
+    //await animateCircleFall(rowTracker[j], j, currentPlayer === player1 ? "red-circle" : "yellow-circle")
+    currentPlayer = currentPlayer === player1 ? player2 : player1
+    togglePlayer(currentPlayer === player1 ? "p2" : "p1", currentPlayer === player1 ? "p1" : "p2")
+
+})
+
+
+
+function updateBoard(newBoard) {
+    console.log(board)
+    console.log("-----------------")
+    newBoard = JSON.parse(newBoard)
+    console.log(newBoard)
+    let [animI, animJ] = [0, 0]
+    for (let j = 0; j < COLUMNS; j++) {
+        for (let i = 0; i < ROWS; i++) {
+            if (board[i][j] !== newBoard[i][j]) {
+                board[i][j] = newBoard[i][j]
+                let circle = document.getElementById(i + "-" + j)
+                circle.classList.replace("purple-circle", getPlayerColor(i, j))
+                rowTracker[j]--
+                animI = j
+                animJ = j
+                break
+            }
+        }
+    }
+    return [animI, animJ]
+}
+
+function updateBoardRequest(e) {
+    console.log("working")
+    let [, col] = e.target.id.split("-")
+    socket.emit('newMove', JSON.stringify([col, null]))
+}
+
+function getPlayerColor(i, j){
+    return board[i][j] === player1 ? "red-circle" : "yellow-circle"
+}
 
 function initGame(){
     addInvisibleRow() // to add a circle on top of the board
@@ -23,7 +103,7 @@ function initGame(){
             let circle = document.createElement("div")
             circle.id = i + "-" + j
             circle.classList.add("circle", "purple-circle")
-            colDiv.addEventListener("click", addCircle)
+            colDiv.addEventListener("click", updateBoardRequest)
             colDiv.addEventListener("mouseenter", addTopCircle)
             colDiv.addEventListener("mouseleave", rmvTopCircle)
             colDiv.append(circle)
@@ -62,7 +142,6 @@ function playSound() {
         'https://media.geeksforgeeks.org/wp-content/uploads/20190531135120/beep.mp3');
     document.body.appendChild(audio)
     window.focus()
-
     audio.play().then(r => console.log(r)).catch(e => console.log(e));
 }
 
@@ -76,7 +155,8 @@ function addInvisibleRow(){
 }
 
 function addTopCircle(e) {
-    if (isOver) return
+   // if (isOver) return
+    if(currentPlayer !== player1) return
     let [, col] = e.target.id.split("-")
     if(col < 0 || col > COLUMNS -1) return
     if (rowTracker[col] < 0) return // if the column is full don't show the top circle
@@ -133,6 +213,7 @@ async function addCircle(e) {
     if (col < 0 || col > COLUMNS - 1) return
     let row = rowTracker[col] // get the actual row from the column tracker
     if (row < 0) return // column is full
+    socket.emit('newMove', JSON.stringify([col, rowTracker[col]]))
 
     //Visual consistency
     rmvColsEventListeners()
@@ -160,14 +241,13 @@ async function addCircle(e) {
     //Update the board
     board[row][col] = currentPlayer
     rowTracker[col]--
-    checkForWin()
 
     //Visual consistency
     addColsEventListeners()
 }
 
 //Toggles player 1 off and player 2 on
-function togglePlayer(p1, p2, circle, colorClass) {
+function togglePlayer(p1, p2) {
     //circle.classList.replace("purple-circle", colorClass)
     document.querySelector(`#${p1} > p`).classList.remove("turn-display");
     document.querySelector(`#${p2} > p`).classList.add("turn-display");
@@ -176,75 +256,7 @@ function togglePlayer(p1, p2, circle, colorClass) {
 }
 
 
-function checkForWin() {
-    if(checkHorizontal()) return
-    if(checkVertical()) return
-    if(checkDiagonal()) return
-    if(checkAntiDiagonal()) return
-    checkForDraw()
-}
 
-function checkHorizontal(){
-    for (let i = 0; i < ROWS; i++) {
-        for (let j = 0; j < COLUMNS - 3; j++){
-            if (board[i][j] === ' ') continue
-            if (board[i][j] === board[i][j+1]
-                && board[i][j+1] === board[i][j+2]
-                && board[i][j+2] === board[i][j+3]) {
-                winCombination.push([i, j], [i, j+1], [i, j+2], [i, j+3])
-                setWinner(i, j);return true;
-            }
-        }
-    }
-}
-
-function checkVertical(){
-    for (let i = 0; i < ROWS - 3; i++) {
-        for (let j = 0; j < COLUMNS; j++){
-            if (board[i][j] === ' ') continue
-            if (board[i][j] === board[i+1][j]
-                && board[i+1][j] === board[i+2][j]
-                && board[i+2][j] === board[i+3][j]) {
-                winCombination.push([i, j], [i+1, j], [i+2, j], [i+3, j])
-                setWinner(i, j);return true;
-            }
-        }
-    }
-}
-
-function checkDiagonal() {
-    for (let i = 3; i < ROWS; i++) {
-        for (let j = 0; j < COLUMNS - 3; j++) {
-            if (board[i][j] === ' ') continue
-            if (board[i][j] === board[i-1][j+1]
-                && board[i-1][j+1] === board[i-2][j+2]
-                && board[i-2][j+2] === board[i-3][j+3]) {
-                winCombination.push([i, j], [i-1, j+1], [i-2, j+2], [i-3, j+3])
-                setWinner(i, j);return true;
-            }
-        }
-    }
-}
-
-function checkAntiDiagonal(){
-    for (let i = 0; i < ROWS - 3; i++) {
-        for (let j = 0; j < COLUMNS - 3; j++){
-            if (board[i][j] === ' ') continue
-            if (board[i][j] === board[i+1][j+1]
-                && board[i+1][j+1] === board[i+2][j+2]
-                && board[i+2][j+2] === board[i+3][j+3]) {
-                winCombination.push([i, j], [i+1, j+1], [i+2, j+2], [i+3, j+3])
-                setWinner(i, j);return true;
-            }
-        }
-    }
-}
-
-function checkForDraw(){
-    if(board.every(row => row.every(col => col !== " "))){
-        setWinner(-1, -1, false)
-    }
-}
 
 
 
@@ -263,18 +275,23 @@ function showEndGameModal(winnerPlayer){
 
     let winner = document.getElementById("winner")
     let points = document.getElementById("points")
-    if(winnerPlayer !== null) {
+    if(winnerPlayer === player1){
         winner.classList.add("green-title")
         winner.innerHTML = winnerPlayer + " is the winner!"
-        points.innerHTML = `+${WIN_POINTS} points!`
+        points.innerHTML = `+${ScorePoints} points!`
+    }
+    else if(winnerPlayer === player2){
+        winner.classList.add("red-title")
+        winner.innerHTML = winnerPlayer + " is the winner!"
+        points.innerHTML = `${ScorePoints} points!`
     }
     else{
         winner.innerHTML = "It's a draw!"
-        points.innerHTML = `+${DRAW_POINTS} points!`
+        points.innerHTML = `+${ScorePoints} points!`
     }
 }
 
-function setWinner(i, j, win=true){
+function setWinner(winner, win=true){
     isOver = true
     //hide the turn
     document.querySelector("#p1 > p").classList.remove("turn-display")
@@ -283,8 +300,8 @@ function setWinner(i, j, win=true){
     document.querySelector("#p1 > div").classList.remove("matchup-circle-zoom")
     document.querySelector("#p2 > div").classList.remove("matchup-circle-zoom")
     //use winCombination to highlight the winning circles
-    winCombination.forEach(([row, col]) => document.getElementById(`${row}-${col}`).classList.add("win-circle"));
-    showEndGameModal(win === true ? board[i][j] : null)
+    if(win) winCombination.forEach(([row, col]) => document.getElementById(`${row}-${col}`).classList.add("win-circle"));
+    showEndGameModal(win === true ? winner : null)
 
 
 
@@ -329,38 +346,3 @@ function resetGame(){
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-const nothingToSeeHere = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight'];
-let keysPressed = [];
-
-document.addEventListener('keydown', (e) => {
-    keysPressed.push(e.code);
-    if (keysPressed.length > nothingToSeeHere.length) keysPressed.shift();
-    if (keysPressed.join(',') === nothingToSeeHere.join(',')) {
-        for (let i = 0; i < 30; i++) {
-            let drop = document.createElement("div");
-            drop.classList.add("raindrop");
-            drop.style.left = Math.random() * 100 + "vw";
-            //make inner text a emoji water
-            drop.innerText = "💧";
-            //eppend on main
-            document.getElementById("winner").appendChild(drop);
-        }
-        console.log("You did it!")
-    }
-});
